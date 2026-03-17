@@ -27,7 +27,6 @@ export async function POST(req: NextRequest) {
     const { error } = await resend.emails.send({
       from: fromAddress,
       to: TO_EMAIL,
-      replyTo: email.trim(),
       subject: `Ask Nish: Question from ${email.trim()}`,
       text: `From: ${email.trim()}\n\nQuestion:\n${question.trim()}`,
       html: `
