@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { Resend } from "resend";
 
-const TO_EMAIL = "pithia@adobe.com";
+/** Must match the email on your Resend account when using onboarding@resend.dev */
+const TO_EMAIL = process.env.ASK_NISH_TO_EMAIL || "npithia@gmail.com";
 
 export async function POST(req: NextRequest) {
   const apiKey = process.env.RESEND_API_KEY;
