@@ -23,7 +23,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const fromAddress = process.env.RESEND_FROM || "Ask Nish <onboarding@resend.dev>";
+    const fromAddress = process.env.RESEND_FROM || "Ask Nish <npithia@gmail.com>";
     const { error } = await resend.emails.send({
       from: fromAddress,
       to: TO_EMAIL,
