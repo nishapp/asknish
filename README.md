@@ -29,3 +29,4 @@ Resend’s test mode only allows sending to your account email. To send to **pit
 1. Go to [resend.com/domains](https://resend.com/domains) and **verify a domain** you control (e.g. a personal domain or a subdomain).
 2. In Vercel (or `.env.local`), set **`RESEND_FROM`** to an address on that domain, e.g. `Ask Nish <noreply@yourdomain.com>`.
 3. After that, the app can send to any recipient, including pithia@adobe.com.
+# nishapp
