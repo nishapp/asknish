@@ -1,18 +1,24 @@
 import { NextRequest, NextResponse } from "next/server";
-import { Resend } from "resend";
+import nodemailer from "nodemailer";
 
-/** Resend test mode only delivers to your account email. No env override. */
-const TO_EMAIL = "npithia@gmail.com";
+const TO_EMAIL = process.env.ASK_NISH_TO_EMAIL || "npithia@gmail.com";
 
 export async function POST(req: NextRequest) {
-  const apiKey = process.env.RESEND_API_KEY;
-  if (!apiKey) {
+  const user = process.env.GMAIL_USER;
+  const pass = process.env.GMAIL_APP_PASSWORD;
+  if (!user || !pass) {
     return NextResponse.json(
-      { error: "Server missing RESEND_API_KEY" },
+      { error: "Server missing GMAIL_USER or GMAIL_APP_PASSWORD" },
       { status: 500 }
     );
   }
-  const resend = new Resend(apiKey);
+
+  const transporter = nodemailer.createTransport({
+    host: "smtp.gmail.com",
+    port: 587,
+    secure: false,
+    auth: { user, pass },
+  });
 
   try {
     const { email, question } = await req.json();
@@ -23,10 +29,10 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const fromAddress = process.env.RESEND_FROM || "Ask Nish <npithia@gmail.com>";
-    const { error } = await resend.emails.send({
-      from: fromAddress,
+    await transporter.sendMail({
+      from: `Ask Nish <${user}>`,
       to: TO_EMAIL,
+      replyTo: email.trim(),
       subject: `Ask Nish: Question from ${email.trim()}`,
       text: `From: ${email.trim()}\n\nQuestion:\n${question.trim()}`,
       html: `
@@ -36,16 +42,11 @@ export async function POST(req: NextRequest) {
       `,
     });
 
-    if (error) {
-      console.error("Resend error:", error);
-      return NextResponse.json({ error: error.message }, { status: 500 });
-    }
-
     return NextResponse.json({ success: true });
   } catch (e) {
-    console.error("Submit error:", e);
+    console.error("Send error:", e);
     return NextResponse.json(
-      { error: "Failed to send question" },
+      { error: e instanceof Error ? e.message : "Failed to send" },
       { status: 500 }
     );
   }
